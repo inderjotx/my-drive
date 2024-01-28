@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             disableTransitionOnChange
           >
             {children}
-            <FileTree />
+            {/* <FileTree /> */}
           </ThemeProvider>
         </body>
       </html>
