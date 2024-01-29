@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { ReactNode } from 'react'
 import FileTree from '@/components/FileTree'
+import { ClientProvider } from '@/components/providers/ProviderClient'
 
 export const metadata: Metadata = {
   title: 'Free-Drive',
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
             {/* <FileTree /> */}
           </ThemeProvider>
+          <ClientProvider />
         </body>
       </html>
     </>

@@ -1,3 +1,4 @@
+import { useCreateDoc } from "@/store/CreateForm"
 
 
 export interface FileSystem {
@@ -10,6 +11,10 @@ export interface IconType {
     type: string,
     key: string
 }
+
+
+
+
 
 
 export function getChildren(path: string, data: FileSystem): IconType[] {
@@ -39,5 +44,25 @@ export function getChildren(path: string, data: FileSystem): IconType[] {
     })
 
     return childrenObjects
+
+}
+
+
+
+export function createDoc() {
+
+    const { attachment, type, docName } = useCreateDoc.getState()
+
+    console.log("data inside create doc")
+    console.log(attachment)
+    console.log(type)
+    console.log(docName)
+
+    // if , type is file 
+    // send the file to the database 
+
+
+    // update filesystem object 
+
 
 }
