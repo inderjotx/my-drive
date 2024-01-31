@@ -4,23 +4,28 @@ import React, { useEffect, useState } from 'react'
 import FileTree from './FileTree'
 import { useFileSystem } from '@/store/FileSystemState'
 import { IconType, getChildren } from '@/lib/fileSystem'
-import { fileTreeData } from '@/lib/data/dummyData'
 import { Icon } from './Icon'
 import BreakCrums from './BreakCrums'
 import Create from './Create'
+import { useFileData } from '@/store/filedata'
 
 function Directory() {
 
     const activeDir = useFileSystem((state) => state.activeDirPath)
     const [curDirChild, setCurDirChild] = useState<IconType[] | []>([])
+    const data = useFileData((state) => state.fileData)
+    const addFile = useFileData((state) => state.addFile)
+    // const children = useFileData((state) => state.curChidren)
+    console.log("inside the dirctory")
+    console.log(data)
 
     useEffect(() => {
 
-        const children = getChildren(activeDir, fileTreeData)
+        const children = getChildren(activeDir, data)
         console.log(children)
         setCurDirChild(children)
 
-    }, [activeDir])
+    }, [activeDir, data])
 
 
 

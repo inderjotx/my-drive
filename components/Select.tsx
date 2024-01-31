@@ -9,7 +9,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { UserCheck } from "lucide-react"
 import { useCreateDoc } from "@/store/CreateForm"
 
 export function SelectType() {
@@ -18,7 +17,7 @@ export function SelectType() {
     return (
         <Select onValueChange={setType} >
             <SelectTrigger className="w-[278px]">
-                <SelectValue placeholder="Select a fruit" />
+                <SelectValue placeholder="Select type of document" />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup >

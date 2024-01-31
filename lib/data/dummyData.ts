@@ -34,3 +34,19 @@ export const fileTreeData = {
         "nothing.txt": {}
     }
 };
+
+
+export const fileArray = [
+    "/home/user/documents/file1.txt",
+    "/home/user/documents/folder1/file2.js",
+    "/home/user/pictures/photo.jpg",
+    "/home/user/music/song.mp3",
+    "/home/user/code/project1/main.py",
+    "/home/user/code/project2/app.ts",
+    "/home/user/downloads/document.pdf",
+    "/home/user/documents/folder2/file3.txt",
+    "/home/user/pictures/family/photo2.jpg",
+    "/home/user/music/album/song2.mp3",
+    "/home/user/code/project3/script.js",
+    "/home/user/downloads/file4.txt"
+]

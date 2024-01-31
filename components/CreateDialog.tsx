@@ -8,19 +8,21 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCreateDoc } from "@/store/CreateForm"
-import { Select } from "./ui/select"
 import { SelectType } from "./Select"
 import { createDoc } from "@/lib/fileSystem"
+import { useState } from "react"
+import { useLoading } from "@/store/loadinghoo"
+import { LoadingCircle } from "@/components/ui/Loading"
 
 export function CreateDoc() {
 
-    const { isOpen, setIsOpen, docName, setDocName, setAttachement } = useCreateDoc(state => state)
+    const { isOpen, setIsOpen, docName, setDocName, setAttachement, type } = useCreateDoc(state => state)
 
+    const loading = useLoading((state) => state.loading)
 
 
     return (
@@ -57,6 +59,7 @@ export function CreateDoc() {
                         <Input
                             id="name"
                             type="file"
+                            disabled={type == "folder"}
                             // @ts-ignore
                             onChange={(e) => setAttachement(e.target.files?.[0])}
                             className="col-span-3"
@@ -64,9 +67,11 @@ export function CreateDoc() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="button" onClick={createDoc} >Create</Button>
+                    <Button type="button" onClick={createDoc} >
+                        {loading ? <LoadingCircle /> : "Create"}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }

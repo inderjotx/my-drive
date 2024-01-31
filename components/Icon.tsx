@@ -1,6 +1,10 @@
+"use client"
 import { IconType } from "@/lib/fileSystem"
+import { getPresignedUrl } from "@/lib/storeToS3"
 import { useFileSystem } from "@/store/FileSystemState"
+import axios from "axios"
 import { Folder, File } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface IconProps {
     icon: IconType
@@ -9,11 +13,33 @@ interface IconProps {
 
 export const Icon = ({ icon }: IconProps) => {
     const update = useFileSystem((state) => state.updateActiveDir)
+
+    const route = useRouter()
+
+    const downloadFile = async (key: string) => {
+
+        const { data: { url } } = await axios.post('/api/get-url', {
+            key: key,
+            method: "get"
+        })
+
+
+        if (!url) {
+            console.log("No valid url ")
+        }
+
+
+        // window.location.href = url
+        route.push(url)
+
+    }
+
+
     return (
         <div className="h-40  cursor-pointer">
             {
                 icon.type == "folder" ?
-                    <div className="flex flex-col px-6 rounded-2xl hover:bg-zinc-900 w-full h-full   justify-center items-center" onClick={() => update(icon.key)} >
+                    <div className="flex flex-col px-6 rounded-2xl hover:bg-foreground/5 w-full h-full   justify-center items-center" onClick={() => update(icon.key)} >
 
                         <Folder className="h-20 w-20" />
                         <p>{icon.name}</p>
@@ -22,7 +48,7 @@ export const Icon = ({ icon }: IconProps) => {
                     </div>
                     :
 
-                    <div className="flex flex-col w-full h-full px-6 rounded-2xl hover:bg-zinc-900  justify-center items-center" >
+                    <div onClick={() => downloadFile(icon.key)} className="flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5  justify-center items-center" >
                         <File className="h-20 w-20" />
                         <p>{icon.name}</p>
                     </div>

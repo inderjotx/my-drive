@@ -8,7 +8,8 @@ interface fileSystemProps {
 
 export const useFileSystem = create<fileSystemProps>((set) => (
     {
-        activeDirPath: '/root',
+        activeDirPath: '/home',
         updateActiveDir: (newPath) => set({ activeDirPath: newPath })
     }
 ))
+
