@@ -1,5 +1,8 @@
+import { getToken } from "@/lib/auth/createToken";
 import { loginUser } from "@/lib/auth/login";
 import { registerUser } from "@/lib/auth/register"
+import { strict } from "assert";
+import { NextResponse } from "next/server";
 
 export interface UserType {
     email: string,
@@ -23,10 +26,20 @@ export async function POST(req: Request) {
         console.log("User inside the backend")
         console.log(user)
         const response = await loginUser(user.email, user.password)
-        const statusCode = 200
-        console.log(response)
-        return Response.json(response, { status: statusCode })
+        const token = await getToken(response?.user?.name, response?.user.email, response?.user.id)
+        console.log(token)
+        // console.log(response)
+        const nextres = NextResponse.json(JSON.stringify(response), { status: 200, headers: { 'content-type': "application/json" } })
 
+
+        nextres.cookies.set(
+            {
+                name: 'jwt',
+                value: token,
+            }
+        )
+
+        return nextres
     }
 
     catch (error) {
