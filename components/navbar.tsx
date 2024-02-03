@@ -1,11 +1,11 @@
 'use client'
 import React from 'react'
-import { ThemeSwitch } from './providers/ThemeSwitch'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import { useSession } from '@/store/authentication'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
+import { ThemeSwitch } from './ui/ThemeSwitch'
 
 export function Navbar() {
 

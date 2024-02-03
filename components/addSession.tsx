@@ -17,6 +17,6 @@ export function SetSession({ name, email, userId, fileArray, fileData }: { name:
 
 
     return (
-        <div></div>
+        <></>
     )
 }

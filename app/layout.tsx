@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { ReactNode } from 'react'
 import { ClientProvider } from '@/components/providers/ProviderClient'
 import { Navbar } from '@/components/navbar'
+import { SessionProvider } from '@/components/providers/SessionProvider'
 
 export const metadata: Metadata = {
   title: 'Free-Drive',
@@ -19,15 +20,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <head />
         <body>
           <Navbar />
-          {/* <SessionProvider /> */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <SessionProvider >
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </SessionProvider>
           <ClientProvider />
         </body>
       </html>
