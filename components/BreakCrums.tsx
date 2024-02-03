@@ -1,6 +1,6 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { useFileSystem } from '@/store/FileSystemState'
+import { useFileSystem } from '@/hooks/FileSystemState'
 import { ChevronRight } from 'lucide-react'
 import React from 'react'
 import { Button } from './ui/button'

@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useCreateDoc } from "@/store/CreateForm"
+import { useCreateDoc } from "@/hooks/CreateForm"
 import { SelectType } from "./Select"
 import { createDoc } from "@/lib/fileSystem"
 import { useState } from "react"
-import { useLoading } from "@/store/loadinghoo"
+import { useLoading } from "@/hooks/loadinghoo"
 import { LoadingCircle } from "@/components/ui/Loading"
 
 export function CreateDoc() {

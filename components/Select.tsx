@@ -9,7 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useCreateDoc } from "@/store/CreateForm"
+import { useCreateDoc } from "@/hooks/CreateForm"
 
 export function SelectType() {
     const setType = useCreateDoc((state) => state.setType)

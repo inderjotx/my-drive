@@ -37,29 +37,44 @@ export async function SessionProvider({ children }: { children: React.ReactNode 
         redirect("/login")
     }
 
-    const data = await verifyToken(jwt?.value)
+    let data;
 
-    if (!data || !data.userId || !data.email || !data.name) {
-        redirect('/login')
+    try {
+
+
+        data = await verifyToken(jwt?.value)
+        if (!data || !data.userId || !data.email || !data.name) {
+            redirect('/login')
+        }
+
+        const userData = await getUserData(jwt.value)
+
+        if ("message" in userData) {
+            redirect('/login')
+        }
+
+
+        return (
+
+            <>
+                <SetSession email={userData.email} userId={userData.id} name={userData.name} fileArray={userData.dataArray}
+                    FileData={JSON.parse(userData.dataObject as string)} />
+                {children}
+            </>
+        )
+
     }
 
-    const userData = await getUserData(jwt.value)
-
-    if ("message" in userData) {
-        redirect('/login')
+    catch (error) {
+        console.log('[NO_TOKEN_ERRROR => /login  ]')
+        return (
+            <>
+                {children}
+            </>
+        )
     }
 
 
 
 
-
-    return (
-
-
-        <>
-            <SetSession email={userData.email} userId={userData.id} name={userData.name} fileArray={userData.dataArray}
-                fileData={JSON.parse(userData.dataObject as string)} />
-            {children}
-        </>
-    )
 }

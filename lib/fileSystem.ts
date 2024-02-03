@@ -1,7 +1,7 @@
-import { useCreateDoc } from "@/store/CreateForm"
-import { useFileSystem } from "@/store/FileSystemState"
-import { useFileData } from "@/store/filedata"
-import { useLoading } from "@/store/loadinghoo"
+import { useCreateDoc } from "@/hooks/CreateForm"
+import { useFileSystem } from "@/hooks/FileSystemState"
+import { useData } from "@/hooks/FileData"
+import { useLoading } from "@/hooks/loadinghoo"
 import axios from 'axios'
 
 
@@ -58,24 +58,34 @@ export function getChildren(path: string, data: FileSystem): IconType[] {
 }
 
 
+function getKey(fileName: string) {
+
+    const activeDir = useFileSystem.getState().activeDirPath
+    return `${activeDir}/${fileName}`
+}
+
+
+
+
+
 
 export async function createDoc() {
 
     const { attachment, type, docName } = useCreateDoc.getState()
-    const updateFileData = useFileData.getState().addFile
+    const updateFileData = useData.getState().addFile
     const setLoading = useLoading.getState().setLoading
     const setOpen = useCreateDoc.getState().setIsOpen
-    const activeDir = useFileSystem.getState().activeDirPath
+
+    const key = getKey(docName)
 
     setLoading(true)
-    console.log("data inside create doc")
 
-    // update in the data like in mongo or something , persistent data 
+
+    // if file upload to s3 after getting the presigned url
     if (type == "file") {
         const { data: { url } } = await axios.post('/api/get-url', {
-            key: activeDir + "/" + docName,
+            key,
             method: "put"
-
         })
 
 
@@ -83,11 +93,7 @@ export async function createDoc() {
             console.log("No valid url ")
         }
 
-
-        console.log(url)
-
         try {
-
             const response = await axios.put(url, attachment, { headers: { 'Content-Type': attachment?.type } })
             console.log(response)
         }
@@ -99,11 +105,12 @@ export async function createDoc() {
     }
 
 
-    // update filesystem object 
-
-
+    // update filesystem object and fileArray 
 
     updateFileData({ name: docName, type: type })
+
+
+    // send data to backend 
     setLoading(false)
     setOpen(false)
 

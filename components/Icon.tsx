@@ -1,7 +1,7 @@
 "use client"
 import { IconType } from "@/lib/fileSystem"
 import { getPresignedUrl } from "@/lib/storeToS3"
-import { useFileSystem } from "@/store/FileSystemState"
+import { useFileSystem } from "@/hooks/FileSystemState"
 import axios from "axios"
 import { Folder, File } from "lucide-react"
 import { useRouter } from "next/navigation"

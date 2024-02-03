@@ -11,12 +11,12 @@ export interface FileSystem {
 
 
 interface useDataStoreProps {
-    fileData: FileSystem,
+    FileData: FileSystem,
     addFile: (doc: newDoc) => void
     removeFile: (doc: newDoc) => void
     fileArray: string[] | any[],
     loadArray: (array: string[] | []) => void
-    loadFileData: (fileData: FileSystem) => void
+    loadFileData: (FileData: FileSystem) => void
 }
 
 
@@ -28,37 +28,37 @@ export interface newDoc {
 
 
 
-export const useFileData = create<useDataStoreProps>((set) => ({
-    fileData: {},
+export const useData = create<useDataStoreProps>((set) => ({
+    FileData: {},
     fileArray: [],
     loadFileData: (data) => {
-        set({ fileData: data })
+        set({ FileData: data })
     },
     loadArray: (userArray) => {
         set({ fileArray: userArray })
         const data = getFileSystem(userArray)
         console.log('[LOAD_ARRAY_FUNCTION_FILE_DATA DATA AFTER ADDING USER: 37]')
         console.log(data)
-        set({ fileData: data })
+        set({ FileData: data })
     },
     addFile: async (doc) => {
         // update the array
         const activeDir = useFileSystem.getState().activeDirPath
         const newKey = activeDir + '/' + doc.name
-        const array = useFileData.getState().fileArray
-        const data = useFileData.getState().fileData
+        const array = useData.getState().fileArray
+        const data = useData.getState().FileData
 
         array.push(newKey)
         const updatedData = await addFile(newKey, doc.type, data)
         console.log("new data after updating ")
         set({ fileArray: array })
-        set({ fileData: updatedData })
+        set({ FileData: updatedData })
     },
     removeFile: (doc) => {
         const activeDir = useFileSystem.getState().activeDirPath
         const key = activeDir + '/' + doc.name
-        const array = useFileData.getState().fileArray
-        const data = useFileData.getState().fileData
+        const array = useData.getState().fileArray
+        const data = useData.getState().FileData
 
         const newArray = array.filter((item) => item !== key)
         const newData = deleteFile(key, data)

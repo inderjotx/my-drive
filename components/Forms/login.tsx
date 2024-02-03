@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useSession } from "@/store/authentication"
-import { useFileData } from "@/store/filedata"
+import { useSession } from "@/hooks/authentication"
+import { useData } from "@/hooks/FileData"
 import { json } from "stream/consumers"
 
 const formSchema = z.object({
@@ -39,8 +39,8 @@ export function LoginForm() {
     const router = useRouter()
 
     const setSession = useSession((state) => state.setSession)
-    const loadArray = useFileData((state) => state.loadArray)
-    const loadData = useFileData((state) => state.loadFileData)
+    const loadArray = useData((state) => state.loadArray)
+    const loadData = useData((state) => state.loadFileData)
 
     const form = useForm<formSchemaType>({
         resolver: zodResolver(formSchema),

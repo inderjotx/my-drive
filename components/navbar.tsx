@@ -2,7 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { useSession } from '@/store/authentication'
+import { useSession } from '@/hooks/authentication'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { ThemeSwitch } from './ui/ThemeSwitch'
