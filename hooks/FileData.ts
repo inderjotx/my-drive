@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { fileArray } from '@/lib/data/dummyData'
-import { IconType, addFile, deleteFile, getChildren, getFileSystem } from '@/lib/fileSystem'
+import { IconType, deleteFile, getChildren, getFileSystem } from '@/lib/fileSystem'
 import { useFileSystem } from './FileSystemState'
 import { get } from 'https'
 
@@ -43,16 +43,16 @@ export const useData = create<useDataStoreProps>((set) => ({
     },
     addFile: async (doc) => {
         // update the array
-        const activeDir = useFileSystem.getState().activeDirPath
-        const newKey = activeDir + '/' + doc.name
-        const array = useData.getState().fileArray
-        const data = useData.getState().FileData
+        // const activeDir = useFileSystem.getState().activeDirPath
+        // const newKey = activeDir + '/' + doc.name
+        // const array = useData.getState().fileArray
+        // const data = useData.getState().FileData
 
-        array.push(newKey)
-        const updatedData = await addFile(newKey, doc.type, data)
-        console.log("new data after updating ")
-        set({ fileArray: array })
-        set({ FileData: updatedData })
+        // array.push(newKey)
+        // const updatedData = await addFile(newKey, doc.type, data)
+        // console.log("new data after updating ")
+        // set({ fileArray: array })
+        // set({ FileData: updatedData })
     },
     removeFile: (doc) => {
         const activeDir = useFileSystem.getState().activeDirPath

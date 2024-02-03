@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label"
 import { useCreateDoc } from "@/hooks/CreateForm"
 import { SelectType } from "./Select"
 import { createDoc } from "@/lib/fileSystem"
-import { useState } from "react"
 import { useLoading } from "@/hooks/loadinghoo"
 import { LoadingCircle } from "@/components/ui/Loading"
 
@@ -23,6 +22,10 @@ export function CreateDoc() {
     const { isOpen, setIsOpen, docName, setDocName, setAttachement, type } = useCreateDoc(state => state)
 
     const loading = useLoading((state) => state.loading)
+
+    async function createFile() {
+        await createDoc()
+    }
 
 
     return (
@@ -67,7 +70,7 @@ export function CreateDoc() {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="button" onClick={createDoc} >
+                    <Button type="button" onClick={createFile} >
                         {loading ? <LoadingCircle /> : "Create"}
                     </Button>
                 </DialogFooter>

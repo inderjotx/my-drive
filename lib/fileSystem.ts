@@ -64,6 +64,71 @@ function getKey(fileName: string) {
     return `${activeDir}/${fileName}`
 }
 
+async function getPresignedUrl(key: string, method: string) {
+    try {
+
+        const { data: { url } } = await axios.post('/api/get-url', {
+            key,
+            method
+        })
+
+        return url
+
+    }
+
+    catch (error) {
+        console.log('[ERROR_PRESIGNED_URL]', error)
+        return null
+    }
+}
+
+
+
+async function storeInS3(url: string, file: File | null) {
+
+    try {
+        if (!file) {
+            const error = new Error("File is null")
+            throw error
+        }
+        const response = await axios.put(url, file, { headers: { 'Content-Type': file.type } })
+        return true
+    }
+    catch (error) {
+        console.log('[ERROR_storeInS3] fileSystem :95', error)
+        return false
+    }
+
+}
+
+
+async function updateStateData(name: string, type: string) {
+
+    const currentDir = useFileSystem.getState().activeDirPath
+    const { loadArray, loadFileData, FileData, fileArray } = useData.getState()
+
+    const pathArray = currentDir.split('/');
+    let current = FileData;
+
+    for (let i = 1; i < pathArray.length - 1; i++) {
+        const folder = pathArray[i];
+        current = current[folder];
+    }
+
+    const fileName = pathArray[pathArray.length - 1];
+
+    current[fileName] = {};
+    const newKey = getKey(name)
+
+
+    loadFileData(JSON.parse(JSON.stringify(FileData)))
+    loadArray([...fileArray, newKey])
+
+
+
+    // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
+}
+
 
 
 
@@ -78,39 +143,23 @@ export async function createDoc() {
 
     const key = getKey(docName)
 
-    setLoading(true)
-
-
     // if file upload to s3 after getting the presigned url
     if (type == "file") {
-        const { data: { url } } = await axios.post('/api/get-url', {
-            key,
-            method: "put"
-        })
 
+        const url = await getPresignedUrl(key, 'put')
 
-        if (!url) {
-            console.log("No valid url ")
-        }
-
-        try {
-            const response = await axios.put(url, attachment, { headers: { 'Content-Type': attachment?.type } })
-            console.log(response)
-        }
-
-        catch (error) {
-            console.log(error)
-        }
+        const hasStored = await storeInS3(url, attachment)
 
     }
 
-
     // update filesystem object and fileArray 
-
     updateFileData({ name: docName, type: type })
+    updateStateData(docName, type)
 
 
     // send data to backend 
+    const response = await sendFileToDatabase(key, type)
+
     setLoading(false)
     setOpen(false)
 
@@ -138,30 +187,30 @@ export function getFileSystem(paths: string[]): FileSystem {
 }
 
 
-export async function addFile(path: string, type: string, data: FileSystem) {
-    const pathArray = path.split('/');
-    let current = data;
+// export async function addFile(path: string, type: string, data: FileSystem) {
+//     const pathArray = path.split('/');
+//     let current = data;
 
-    // Traverse the path to the parent directory
-    for (let i = 1; i < pathArray.length - 1; i++) {
-        const folder = pathArray[i];
-        current = current[folder];
-    }
+//     // Traverse the path to the parent directory
+//     for (let i = 1; i < pathArray.length - 1; i++) {
+//         const folder = pathArray[i];
+//         current = current[folder];
+//     }
 
-    // Add the new file to the parent directory
-    const fileName = pathArray[pathArray.length - 1];
+//     // Add the new file to the parent directory
+//     const fileName = pathArray[pathArray.length - 1];
 
 
-    // add metadata here , not empty object
-    current[fileName] = {};
+//     // add metadata here , not empty object
+//     current[fileName] = {};
 
-    let clone = JSON.parse(JSON.stringify(data))
+//     let clone = JSON.parse(JSON.stringify(data))
 
-    const response = await sendFileToDatabase(path, type, clone)
+//     const response = await sendFileToDatabase()
 
-    // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
-    return clone;
-}
+//     // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
+//     return clone;
+// }
 
 
 
@@ -183,16 +232,25 @@ export function deleteFile(path: string, root: FileSystem) {
     return root;
 }
 
-export async function sendFileToDatabase(file: string, type: string, dataObject: FileSystem) {
+export async function sendFileToDatabase(file: string, type: string) {
 
-    const data = await axios.post('/api/add-file', {
-        type,
-        key: file,
-        dataObject
-    })
+    try {
 
+        const data = useData.getState().FileData
 
-    return data.data
+        const reponse = await axios.post('/api/add-file', {
+            type,
+            key: file,
+            dataObject: data
+        })
+
+        return true
+    }
+
+    catch (error) {
+        console.log('[ERROR_sendFileToDatabase filesystem : 253]', error)
+        return false
+    }
 
 
 }
