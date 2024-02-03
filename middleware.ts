@@ -2,6 +2,7 @@
 import { verifyToken } from '@/lib/auth/createToken'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { useSession } from './store/authentication'
 
 
 

@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/store/authentication"
+import { useFileData } from "@/store/filedata"
+import { json } from "stream/consumers"
 
 const formSchema = z.object({
     email: z.string().min(1).email("This is not a valid email "),
@@ -37,6 +39,8 @@ export function LoginForm() {
     const router = useRouter()
 
     const setSession = useSession((state) => state.setSession)
+    const loadArray = useFileData((state) => state.loadArray)
+    const loadData = useFileData((state) => state.loadFileData)
 
     const form = useForm<formSchemaType>({
         resolver: zodResolver(formSchema),
@@ -59,15 +63,25 @@ export function LoginForm() {
                 }
             })
 
-            console.log("data")
-            console.log(data)
+            console.log("[DATA_RETURDED_LOGIN]")
+            console.log(typeof data)
+            const jsonData = JSON.parse(data)
+            const user = jsonData.user
+
+            console.log(user.dataObject)
+
+
+            setSession(user.name, user.email, user.id)
+            loadArray(user.dataArray)
+            loadData(JSON.parse(user.dataObject))
+
             router.push('/')
 
-            if (data.code == 0) {
-                const user = data.user
-                setSession(user.name, user.email, user.id)
-            }
+
+
+
         }
+
 
         catch (error) {
             console.log("[LOGIN_ERROR_PAGE]", error)

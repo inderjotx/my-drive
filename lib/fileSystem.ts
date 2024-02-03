@@ -22,31 +22,38 @@ export interface IconType {
 
 export function getChildren(path: string, data: FileSystem): IconType[] {
 
-    const keys = path.split('/').slice(1)
-    console.log(path)
-    console.log(data)
-    let newData = data
-    for (let key in keys) {
-        newData = newData[keys[key]]
-    }
-
-    console.log(newData)
-    const children = Object.keys(newData)
-
-    const childrenObjects = children.map((name) => {
-        const type = (name.includes('.')) ? "file" : "folder"
-        const newKeys = [...keys]
-        newKeys.push(name)
-
-        const key = "/" + newKeys.join("/")
-        return {
-            name: name,
-            type: type,
-            key: key
+    try {
+        const keys = path.split('/').slice(1)
+        console.log(path)
+        console.log(data)
+        let newData = data
+        for (let key in keys) {
+            newData = newData[keys[key]]
         }
-    })
 
-    return childrenObjects
+        console.log(newData)
+        const children = Object.keys(newData)
+
+        const childrenObjects = children.map((name) => {
+            const type = (name.includes('.')) ? "file" : "folder"
+            const newKeys = [...keys]
+            newKeys.push(name)
+
+            const key = "/" + newKeys.join("/")
+            return {
+                name: name,
+                type: type,
+                key: key
+            }
+        })
+
+        return childrenObjects
+
+    }
+    catch (error) {
+        console.log('[GET_CHILDREN]', error)
+        return []
+    }
 
 }
 
@@ -62,19 +69,8 @@ export async function createDoc() {
 
     setLoading(true)
     console.log("data inside create doc")
-    console.log(attachment)
-    console.log(type)
-    console.log(docName)
-
-
-
-
 
     // update in the data like in mongo or something , persistent data 
-
-
-
-
     if (type == "file") {
         const { data: { url } } = await axios.post('/api/get-url', {
             key: activeDir + "/" + docName,
@@ -135,7 +131,7 @@ export function getFileSystem(paths: string[]): FileSystem {
 }
 
 
-export function addFile(path: string, data: FileSystem) {
+export async function addFile(path: string, type: string, data: FileSystem) {
     const pathArray = path.split('/');
     let current = data;
 
@@ -147,10 +143,16 @@ export function addFile(path: string, data: FileSystem) {
 
     // Add the new file to the parent directory
     const fileName = pathArray[pathArray.length - 1];
+
+
+    // add metadata here , not empty object
     current[fileName] = {};
 
-    // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
     let clone = JSON.parse(JSON.stringify(data))
+
+    const response = await sendFileToDatabase(path, type, clone)
+
+    // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
     return clone;
 }
 
@@ -172,4 +174,18 @@ export function deleteFile(path: string, root: FileSystem) {
     delete current[pathArray[pathArray.length - 1]]
 
     return root;
+}
+
+export async function sendFileToDatabase(file: string, type: string, dataObject: FileSystem) {
+
+    const data = await axios.post('/api/add-file', {
+        type,
+        key: file,
+        dataObject
+    })
+
+
+    return data.data
+
+
 }

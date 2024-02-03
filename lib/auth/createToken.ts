@@ -7,12 +7,6 @@ const EXPIRY_DURATION = 60 * 60
 
 
 
-// export function getToken() {
-//     const token = jwt.sign({ data }, SECRET_KEY, { expiresIn: EXPIRY_DURATION })
-//     return token;
-
-
-// }
 
 interface Token {
     name: string,
@@ -36,13 +30,23 @@ export async function getToken(name: string, email: string, userId: string): Pro
 }
 
 
-export async function verifyToken(token: string): Promise<Token> {
+export async function verifyToken(token: string): Promise<Token | void> {
 
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(SECRET_KEY));
+    try {
 
-    console.log("[VERIFY_TOKEN_RESPONSE]")
-    console.log(payload)
+        const { payload } = await jwtVerify(token, new TextEncoder().encode(SECRET_KEY));
 
-    // @ts-ignore
-    return payload;
+        console.log("[VERIFY_TOKEN_RESPONSE]")
+        console.log(payload)
+
+        // @ts-ignore
+        return payload;
+    }
+
+    catch (error) {
+        console.log("[ERROR_IN_VERFICATION_WRONG_KEY", error)
+        // return null
+        return new Promise((resolve) => resolve())
+    }
+
 }

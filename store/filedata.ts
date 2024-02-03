@@ -2,10 +2,10 @@ import { create } from 'zustand'
 import { fileArray } from '@/lib/data/dummyData'
 import { IconType, addFile, deleteFile, getChildren, getFileSystem } from '@/lib/fileSystem'
 import { useFileSystem } from './FileSystemState'
-import { immer } from 'zustand/middleware/immer'
+import { get } from 'https'
 
 
-interface FileSystem {
+export interface FileSystem {
     [key: string]: FileSystem
 }
 
@@ -14,8 +14,9 @@ interface useDataStoreProps {
     fileData: FileSystem,
     addFile: (doc: newDoc) => void
     removeFile: (doc: newDoc) => void
-    fileArray: string[],
-    curChidren: IconType[] | []
+    fileArray: string[] | any[],
+    loadArray: (array: string[] | []) => void
+    loadFileData: (fileData: FileSystem) => void
 }
 
 
@@ -27,12 +28,20 @@ export interface newDoc {
 
 
 
-
 export const useFileData = create<useDataStoreProps>((set) => ({
-    fileData: getFileSystem(fileArray),
-    fileArray: fileArray,
-    curChidren: [],
-    addFile: (doc) => {
+    fileData: {},
+    fileArray: [],
+    loadFileData: (data) => {
+        set({ fileData: data })
+    },
+    loadArray: (userArray) => {
+        set({ fileArray: userArray })
+        const data = getFileSystem(userArray)
+        console.log('[LOAD_ARRAY_FUNCTION_FILE_DATA DATA AFTER ADDING USER: 37]')
+        console.log(data)
+        set({ fileData: data })
+    },
+    addFile: async (doc) => {
         // update the array
         const activeDir = useFileSystem.getState().activeDirPath
         const newKey = activeDir + '/' + doc.name
@@ -40,13 +49,10 @@ export const useFileData = create<useDataStoreProps>((set) => ({
         const data = useFileData.getState().fileData
 
         array.push(newKey)
-        const newData = addFile(newKey, data)
+        const updatedData = await addFile(newKey, doc.type, data)
         console.log("new data after updating ")
-        console.log(newData)
-        const newChildren = getChildren(activeDir, newData)
-        set({ fileData: newData })
         set({ fileArray: array })
-        set({ curChidren: newChildren })
+        set({ fileData: updatedData })
     },
     removeFile: (doc) => {
         const activeDir = useFileSystem.getState().activeDirPath
@@ -56,10 +62,7 @@ export const useFileData = create<useDataStoreProps>((set) => ({
 
         const newArray = array.filter((item) => item !== key)
         const newData = deleteFile(key, data)
-        const newChildren = getChildren(activeDir, newData)
-        set({ fileData: newData })
         set({ fileArray: newArray })
-        set({ curChidren: newChildren })
     },
 }))
 

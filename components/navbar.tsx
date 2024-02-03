@@ -4,18 +4,21 @@ import { ThemeSwitch } from './providers/ThemeSwitch'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import { useSession } from '@/store/authentication'
-import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 
 export function Navbar() {
+
+    const router = useRouter()
+
 
     const userId = useSession((state) => state.userId)
     const signOut = useSession((state) => state.clearSession)
 
     async function handleSignOut() {
-
-        // signOut()
-        await axios.get('/api/sign-out')
-
+        document.cookie = "jwt= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+        signOut()
+        router.push('/login')
     }
 
     return (

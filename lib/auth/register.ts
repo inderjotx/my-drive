@@ -18,8 +18,8 @@ export async function registerUser(name: string, email: string
                 name: name,
                 email: email,
                 password: hashedPassword,
-                dataArray: [],
-                dataObject: {}
+                dataArray: ['/home'],
+                dataObject: JSON.stringify({ home: {} })
             }
         })
 

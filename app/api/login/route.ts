@@ -1,7 +1,5 @@
 import { getToken } from "@/lib/auth/createToken";
 import { loginUser } from "@/lib/auth/login";
-import { registerUser } from "@/lib/auth/register"
-import { strict } from "assert";
 import { NextResponse } from "next/server";
 
 export interface UserType {

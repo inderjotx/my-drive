@@ -1,16 +1,14 @@
-import bcrypt from 'bcrypt'
 import { PrismaClient } from '@prisma/client'
 
-export const prisma = new PrismaClient()
+const prisma = new PrismaClient()
 
 
-export async function loginUser(email: string
-    , password: string) {
+export async function addFileToDatabase(name: string, userId: string, dataObject: FileSystem) {
 
     try {
         const isUser = await prisma.user.findFirst({
             where: {
-                email: email,
+                id: userId
             }
         })
 
@@ -20,10 +18,23 @@ export async function loginUser(email: string
         }
 
 
-        const isCorrect = await bcrypt.compare(password, isUser.password)
+        const dataArray = isUser.dataArray
+        dataArray.push(name)
 
-        if (isCorrect) {
-            console.log("[LOGIN_USER]", isUser)
+        const isUpdated = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                dataArray: dataArray,
+                dataObject: JSON.stringify(dataObject)
+            }
+        })
+
+
+
+        if (isUpdated) {
+            console.log("[LOGIN_USER]", isUpdated)
             isUser.password = ""
             return { code: 0, message: "User loging Successfully", user: isUser }
         }
