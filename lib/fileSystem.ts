@@ -4,6 +4,7 @@ import { useData } from "@/hooks/FileData"
 import { useLoading } from "@/hooks/loadinghoo"
 import axios from 'axios'
 import { useSession } from "@/hooks/authentication"
+import { object } from "zod"
 
 
 
@@ -121,17 +122,8 @@ function updateStateData(name: string, type: string) {
     current[fileName] = {};
     const newKey = getKey(name)
 
-    const newData = JSON.parse(JSON.stringify(FileData))
-    const newArray = [...fileArray, newKey]
-    loadFileData(newData)
-    loadArray(newArray)
-
-    return {
-        object: newData,
-        array: newArray
-    }
-
-
+    loadFileData(JSON.parse(JSON.stringify(FileData)))
+    loadArray([...fileArray, newKey])
 
 
     // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
@@ -205,6 +197,9 @@ export async function createDoc() {
 
     const key = getKey(docName)
 
+
+
+
     // if file upload to s3 after getting the presigned url
     if (type == "file") {
 
@@ -216,11 +211,11 @@ export async function createDoc() {
 
     // update filesystem object and fileArray 
     // updateFileData({ name: docName, type: type })
-    const { object, array } = updateStateData(docName, type)
 
+    updateStateData(docName, type)
 
     // send data to backend 
-    const response = await sendFileToDatabase(array, object)
+    const response = await sendFileToDatabase()
 
     setLoading(false)
     setOpen(false)
@@ -280,26 +275,23 @@ function deleteFileArray(path: string, array: string[]) {
 
 
 
+export async function sendFileToDatabase(dataArray?: string[], dataObject?: FileSystem) {
 
+    let data = dataObject
+    let array = dataArray
 
+    if (!data || !array) {
 
+        array = useData.getState().fileArray
+        data = useData.getState().FileData
+    }
 
-
-
-
-
-
-
-
-
-export async function sendFileToDatabase(dataArray: string[], dataObject: FileSystem) {
 
     try {
-
-
+        console.log("before seing databata ojbect")
         const reponse = await axios.post('/api/add-file', {
-            dataArray,
-            dataObject
+            dataArray: array,
+            dataObject: data
         })
 
         return true
