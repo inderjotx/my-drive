@@ -1,8 +1,5 @@
 import { create } from 'zustand'
-import { fileArray } from '@/lib/data/dummyData'
-import { IconType, deleteFile, getChildren, getFileSystem } from '@/lib/fileSystem'
-import { useFileSystem } from './FileSystemState'
-import { get } from 'https'
+import { getFileSystem } from '@/lib/fileSystem'
 
 
 export interface FileSystem {
@@ -12,8 +9,6 @@ export interface FileSystem {
 
 interface useDataStoreProps {
     FileData: FileSystem,
-    addFile: (doc: newDoc) => void
-    removeFile: (doc: newDoc) => void
     fileArray: string[] | any[],
     loadArray: (array: string[] | []) => void
     loadFileData: (FileData: FileSystem) => void
@@ -40,29 +35,6 @@ export const useData = create<useDataStoreProps>((set) => ({
         console.log('[LOAD_ARRAY_FUNCTION_FILE_DATA DATA AFTER ADDING USER: 37]')
         console.log(data)
         set({ FileData: data })
-    },
-    addFile: async (doc) => {
-        // update the array
-        // const activeDir = useFileSystem.getState().activeDirPath
-        // const newKey = activeDir + '/' + doc.name
-        // const array = useData.getState().fileArray
-        // const data = useData.getState().FileData
-
-        // array.push(newKey)
-        // const updatedData = await addFile(newKey, doc.type, data)
-        // console.log("new data after updating ")
-        // set({ fileArray: array })
-        // set({ FileData: updatedData })
-    },
-    removeFile: (doc) => {
-        const activeDir = useFileSystem.getState().activeDirPath
-        const key = activeDir + '/' + doc.name
-        const array = useData.getState().fileArray
-        const data = useData.getState().FileData
-
-        const newArray = array.filter((item) => item !== key)
-        const newData = deleteFile(key, data)
-        set({ fileArray: newArray })
     },
 }))
 

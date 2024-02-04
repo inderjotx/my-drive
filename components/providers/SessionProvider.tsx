@@ -33,16 +33,14 @@ export async function SessionProvider({ children }: { children: React.ReactNode 
     const cookiesStore = cookies()
     const jwt = cookiesStore.get('jwt')
 
-    if (!jwt) {
-        redirect("/login")
-    }
 
-    let data;
+    if (!jwt) {
+        return (<>{children}</>)
+    }
 
     try {
 
-
-        data = await verifyToken(jwt?.value)
+        const data = await verifyToken(jwt?.value)
         if (!data || !data.userId || !data.email || !data.name) {
             redirect('/login')
         }

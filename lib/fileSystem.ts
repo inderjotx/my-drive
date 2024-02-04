@@ -3,6 +3,7 @@ import { useFileSystem } from "@/hooks/FileSystemState"
 import { useData } from "@/hooks/FileData"
 import { useLoading } from "@/hooks/loadinghoo"
 import axios from 'axios'
+import { useSession } from "@/hooks/authentication"
 
 
 
@@ -102,7 +103,7 @@ async function storeInS3(url: string, file: File | null) {
 }
 
 
-async function updateStateData(name: string, type: string) {
+function updateStateData(name: string, type: string) {
 
     const currentDir = useFileSystem.getState().activeDirPath
     const { loadArray, loadFileData, FileData, fileArray } = useData.getState()
@@ -120,9 +121,16 @@ async function updateStateData(name: string, type: string) {
     current[fileName] = {};
     const newKey = getKey(name)
 
+    const newData = JSON.parse(JSON.stringify(FileData))
+    const newArray = [...fileArray, newKey]
+    loadFileData(newData)
+    loadArray(newArray)
 
-    loadFileData(JSON.parse(JSON.stringify(FileData)))
-    loadArray([...fileArray, newKey])
+    return {
+        object: newData,
+        array: newArray
+    }
+
 
 
 
@@ -133,11 +141,65 @@ async function updateStateData(name: string, type: string) {
 
 
 
+export async function deleteDoc(key: string) {
+
+    const { fileArray, FileData, loadArray, loadFileData } = useData.getState()
+
+    // update object and array
+    const newData = deleteFileData(key, FileData)
+    console.log('After updaing object')
+    console.log(newData)
+    const newArray = deleteFileArray(key, fileArray)
+
+    console.log('Updated Array')
+    console.log(newArray)
+
+    // update database 
+    const respone = await sendFileToDatabase(newArray, newData)
+
+
+    // update bucket 
+    const deletS3 = await deleteFromBucket(key)
+
+
+    loadFileData(newData)
+    loadArray(newArray)
+}
+
+
+
+async function deleteFromBucket(key: string) {
+
+    const userId = useSession.getState().userId
+    try {
+
+        const { data } = await axios.get('/api/delete-file', {
+            params: {
+                userId,
+                key,
+            }
+        })
+
+        return data
+    }
+
+    catch (error) {
+        console.log('[error deleteing in S3]', error)
+    }
+
+
+
+}
+
+
+
+
+
 
 export async function createDoc() {
 
     const { attachment, type, docName } = useCreateDoc.getState()
-    const updateFileData = useData.getState().addFile
+    // const updateFileData = useData.getState().addFile
     const setLoading = useLoading.getState().setLoading
     const setOpen = useCreateDoc.getState().setIsOpen
 
@@ -153,12 +215,12 @@ export async function createDoc() {
     }
 
     // update filesystem object and fileArray 
-    updateFileData({ name: docName, type: type })
-    updateStateData(docName, type)
+    // updateFileData({ name: docName, type: type })
+    const { object, array } = updateStateData(docName, type)
 
 
     // send data to backend 
-    const response = await sendFileToDatabase(key, type)
+    const response = await sendFileToDatabase(array, object)
 
     setLoading(false)
     setOpen(false)
@@ -187,34 +249,12 @@ export function getFileSystem(paths: string[]): FileSystem {
 }
 
 
-// export async function addFile(path: string, type: string, data: FileSystem) {
-//     const pathArray = path.split('/');
-//     let current = data;
+// updateing object 
+// updating array 
+// updateing database 
+// deleting from the s3 bucket 
 
-//     // Traverse the path to the parent directory
-//     for (let i = 1; i < pathArray.length - 1; i++) {
-//         const folder = pathArray[i];
-//         current = current[folder];
-//     }
-
-//     // Add the new file to the parent directory
-//     const fileName = pathArray[pathArray.length - 1];
-
-
-//     // add metadata here , not empty object
-//     current[fileName] = {};
-
-//     let clone = JSON.parse(JSON.stringify(data))
-
-//     const response = await sendFileToDatabase()
-
-//     // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
-//     return clone;
-// }
-
-
-
-export function deleteFile(path: string, root: FileSystem) {
+export function deleteFileData(path: string, root: FileSystem) {
     const pathArray = path.split('/');
     let current = root;
 
@@ -224,24 +264,42 @@ export function deleteFile(path: string, root: FileSystem) {
         current = current[folder];
     }
 
-    // Add the new file to the parent directory
-
-    console.log(current)
     delete current[pathArray[pathArray.length - 1]]
 
-    return root;
+    return JSON.parse(JSON.stringify(root));
 }
 
-export async function sendFileToDatabase(file: string, type: string) {
+
+function deleteFileArray(path: string, array: string[]) {
+
+    return array.filter((item) => (item.indexOf(path) === -1))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function sendFileToDatabase(dataArray: string[], dataObject: FileSystem) {
 
     try {
 
-        const data = useData.getState().FileData
 
         const reponse = await axios.post('/api/add-file', {
-            type,
-            key: file,
-            dataObject: data
+            dataArray,
+            dataObject
         })
 
         return true

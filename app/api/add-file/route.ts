@@ -1,6 +1,5 @@
 import { addFileToDatabase } from "@/lib/auth/addFile";
 import { verifyToken } from "@/lib/auth/createToken";
-import { addFile } from "@/lib/fileSystem";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,19 +9,16 @@ export async function POST(req: NextRequest) {
     try {
 
 
-        const { type, key, dataObject } = await req.json()
+        const { dataArray, dataObject } = await req.json()
 
         const encToken = req.cookies.get('jwt')
 
-        console.log(key)
-        console.log(type)
-        console.log(encToken)
 
         if (!encToken || !encToken.value) {
             redirect('/login')
         }
 
-        if (!type || !key || !dataObject) {
+        if (!dataArray || !dataObject) {
             return NextResponse.json({ message: "Invalid request" }, { status: 400 })
         }
 
@@ -35,7 +31,7 @@ export async function POST(req: NextRequest) {
         }
 
 
-        const updateUser = await addFileToDatabase(key, data.userId, dataObject)
+        const updateUser = await addFileToDatabase(dataArray, data.userId, dataObject)
 
         return NextResponse.json(updateUser, { status: 200 })
 

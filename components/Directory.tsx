@@ -8,13 +8,13 @@ import { Icon } from './Icon'
 import BreakCrums from './BreakCrums'
 import Create from './Create'
 import { useData } from '@/hooks/FileData'
+import { IconPopOver } from './IconPopOver'
 
 function Directory() {
 
     const activeDir = useFileSystem((state) => state.activeDirPath)
     const [curDirChild, setCurDirChild] = useState<IconType[] | []>([])
     const data = useData((state) => state.FileData)
-    const addFile = useData((state) => state.addFile)
     // const children = useData((state) => state.curChidren)
     console.log("inside the dirctory")
     console.log(data)
@@ -44,7 +44,11 @@ function Directory() {
                     <Create />
                     {
                         curDirChild.map((item: IconType, index: number) => {
-                            return <Icon icon={item} key={index} />
+                            return (
+                                <IconPopOver key={item.key} fileName={item.key}>
+                                    <Icon icon={item} />
+                                </IconPopOver>
+                            )
                         })
                     }
                 </div>
