@@ -251,8 +251,6 @@ export async function createDoc() {
 
 
 
-
-
 export function deleteFileData(path: string, root: FileSystem) {
     const pathArray = path.split('/');
     let current = root;
