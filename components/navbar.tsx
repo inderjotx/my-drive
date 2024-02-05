@@ -6,6 +6,7 @@ import { useSession } from '@/hooks/authentication'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { ThemeSwitch } from './ui/ThemeSwitch'
+import { SearchBar } from './SearchBar'
 
 export function Navbar() {
 
@@ -23,7 +24,11 @@ export function Navbar() {
 
     return (
         <div className='flex static top-0  h-16 items-center px-6 pt-3  justify-between'>
-            <Link href="/">Free Drive</Link>
+            <div className='flex gap-28 items-center'>
+
+                <Link href="/">Free Drive</Link>
+                <SearchBar />
+            </div>
             <div className='flex justify-center items-center gap-6 '>
                 {
                     userId == "" || !userId ? <>
