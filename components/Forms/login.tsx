@@ -72,6 +72,8 @@ export function LoginForm() {
 
             setSession(user.name, user.email, user.id)
             loadArray(user.dataArray)
+            console.log("user data from the database ")
+            console.log(JSON.parse(user.dataObject))
             loadData(JSON.parse(user.dataObject))
 
             router.push('/')

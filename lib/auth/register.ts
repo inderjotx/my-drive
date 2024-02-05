@@ -21,13 +21,20 @@ export async function registerUser(name: string, email: string
                 password: hashedPassword,
                 dataArray: ['/home'],
                 dataObject: JSON.stringify({
-                    home: {
-                        children: {},
-                        metadata: {
-                            type: 'folder',
-                            time: getCurDate(),
-                            size: "Don't know"
+                    children: {
+                        home: {
+                            children: {},
+                            metadata: {
+                                type: 'folder',
+                                time: getCurDate(),
+                                size: "Don't know"
+                            }
                         }
+                    },
+                    metadata: {
+                        type: 'folder',
+                        time: getCurDate(),
+                        size: "Don't know"
                     }
                 })
             }

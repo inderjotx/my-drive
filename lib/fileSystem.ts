@@ -4,11 +4,21 @@ import { useData } from "@/hooks/FileData"
 import axios from 'axios'
 import { useSession } from "@/hooks/authentication"
 import { useLoading } from "@/hooks/loadinghoo"
+import { getCurDate } from "./auth/date"
 
 
 
 export interface FileSystem {
-    [key: string]: FileSystem
+    "children": {
+        [key: string]: FileSystem
+    }
+    "metadata": Metadata
+}
+
+interface Metadata {
+    "type": string,
+    "size": string,
+    "time": string
 }
 
 
@@ -29,14 +39,15 @@ export function getChildren(path: string, data: FileSystem): IconType[] {
         console.log(data)
         let newData = data
         for (let key in keys) {
-            newData = newData[keys[key]]
+            newData = newData['children'][keys[key]]
         }
 
         console.log(newData)
-        const children = Object.keys(newData)
+        const children = Object.keys(newData.children)
+
 
         const childrenObjects = children.map((name) => {
-            const type = (name.includes('.')) ? "file" : "folder"
+            const type = newData.children[name].metadata.type
             const newKeys = [...keys]
             newKeys.push(name)
 
@@ -108,24 +119,39 @@ function updateStateData(name: string, type: string) {
     const currentDir = useFileSystem.getState().activeDirPath
     const { loadArray, loadFileData, FileData, fileArray } = useData.getState()
 
-    const pathArray = currentDir.split('/');
+    const pathArray = currentDir.split('/').slice(1);
+    console.log(pathArray)
     let current = FileData;
 
-    for (let i = 1; i < pathArray.length - 1; i++) {
+    console.log("filedata from the state ")
+    console.log(FileData)
+
+    for (let i = 0; i < pathArray.length; i++) {
         const folder = pathArray[i];
-        current = current[folder];
+        console.log("currents' s children")
+        console.log(current.children)
+        console.log(current.children.home)
+        current = current.children[folder];
     }
 
-    const fileName = pathArray[pathArray.length - 1];
+    console.log("current")
+    console.log(current)
 
-    current[fileName] = {};
+    current.children[name] = {
+        "children": {},
+        "metadata": {
+            "type": type,
+            "time": getCurDate(),
+            "size": "can get size"
+        }
+    };
+    console.log(FileData)
     const newKey = getKey(name)
 
     loadFileData(JSON.parse(JSON.stringify(FileData)))
     loadArray([...fileArray, newKey])
 
 
-    // return the same doesn't changes the state of useEffect , ( zustand's state is suppose to be immuatable)
 }
 
 
@@ -223,30 +249,9 @@ export async function createDoc() {
 }
 
 
-export function getFileSystem(paths: string[]): FileSystem {
-    const filesystem: (FileSystem | null) = {};
-
-    for (const path of paths) {
-        const components = path.split('/');
-
-        let currentLevel: FileSystem = filesystem;
-        for (const component of components.slice(1)) {
-            if (!currentLevel[component]) {
-                currentLevel[component] = {};
-            }
-
-            currentLevel = currentLevel[component] as FileSystem;
-        }
-    }
-
-    return filesystem;
-}
 
 
-// updateing object 
-// updating array 
-// updateing database 
-// deleting from the s3 bucket 
+
 
 export function deleteFileData(path: string, root: FileSystem) {
     const pathArray = path.split('/');
@@ -255,10 +260,11 @@ export function deleteFileData(path: string, root: FileSystem) {
     // Traverse the path to the parent directory
     for (let i = 1; i < pathArray.length - 1; i++) {
         const folder = pathArray[i];
-        current = current[folder];
+        current = current.children[folder];
     }
 
-    delete current[pathArray[pathArray.length - 1]]
+    const name = pathArray[pathArray.length - 1]
+    delete current.children[name]
 
     return JSON.parse(JSON.stringify(root));
 }
@@ -283,11 +289,13 @@ export async function sendFileToDatabase(dataArray?: string[], dataObject?: File
 
         array = useData.getState().fileArray
         data = useData.getState().FileData
+        console.log("befre seidng data to database")
+        console.log(data)
+
     }
 
 
     try {
-        console.log("before seing databata ojbect")
         const reponse = await axios.post('/api/add-file', {
             dataArray: array,
             dataObject: data

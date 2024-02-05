@@ -1,11 +1,6 @@
 import { create } from 'zustand'
-import { getFileSystem } from '@/lib/fileSystem'
-
-
-export interface FileSystem {
-    [key: string]: FileSystem
-}
-
+import { getCurDate } from '@/lib/auth/date'
+import { FileSystem } from '@/lib/fileSystem'
 
 interface useDataStoreProps {
     FileData: FileSystem,
@@ -24,17 +19,32 @@ export interface newDoc {
 
 
 export const useData = create<useDataStoreProps>((set) => ({
-    FileData: {},
+    FileData:
+    {
+        "children": {
+            "home": {
+                "children": {},
+                "metadata": {
+                    "type": "folder",
+                    "time": getCurDate(),
+                    "size": "donknow"
+                }
+            },
+
+        },
+        "metadata": {
+            "type": "folder",
+            "time": getCurDate(),
+            "size": "donknow"
+        }
+
+    },
     fileArray: [],
     loadFileData: (data) => {
         set({ FileData: data })
     },
     loadArray: (userArray) => {
         set({ fileArray: userArray })
-        const data = getFileSystem(userArray)
-        console.log('[LOAD_ARRAY_FUNCTION_FILE_DATA DATA AFTER ADDING USER: 37]')
-        console.log(data)
-        set({ FileData: data })
     },
 }))
 
