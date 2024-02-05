@@ -6,6 +6,7 @@ import { ReactNode } from 'react'
 import { ClientProvider } from '@/components/providers/ProviderClient'
 import { Navbar } from '@/components/navbar'
 import { SessionProvider } from '@/components/providers/SessionProvider'
+import { VideoProvider } from '@/components/providers/ShowVideo'
 
 export const metadata: Metadata = {
   title: 'Free-Drive',
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </ThemeProvider>
           </SessionProvider>
           <ClientProvider />
+          <VideoProvider />
         </body>
       </html>
     </>

@@ -230,7 +230,7 @@ export async function createDoc() {
     updateStateData(docName, type)
 
     // if file upload to s3 after getting the presigned url
-    if (type == "file") {
+    if (type != "folder") {
 
         const url = await getPresignedUrl(key, 'put')
 

@@ -15,13 +15,11 @@ import { useCreateDoc } from "@/hooks/CreateForm"
 import { SelectType } from "./Select"
 import { createDoc } from "@/lib/fileSystem"
 import { useLoading } from "@/hooks/loadinghoo"
-import { LoadingCircle } from "@/components/ui/Loading"
 
 export function CreateDoc() {
 
-    const { isOpen, setIsOpen, docName, setDocName, setAttachement, type } = useCreateDoc(state => state)
+    const { isOpen, setIsOpen, docName, setDocName, setAttachement, type, setType } = useCreateDoc(state => state)
 
-    const loading = useLoading((state) => state.loading)
     const setLoading = useLoading((state) => state.setLoading)
 
     async function createFile() {
@@ -51,7 +49,7 @@ export function CreateDoc() {
                             type="file"
                             disabled={type == "folder"}
                             // @ts-ignore
-                            onChange={(e) => { setAttachement(e.target.files?.[0]); setDocName(e.target.files?.[0].name) }}
+                            onChange={(e) => { setAttachement(e.target.files?.[0]); setDocName(e.target.files?.[0].name); setType(e.target.files?.[0].type); console.log(e.target.files?.[0].type) }}
                             className="col-span-3"
                         />
                     </div>
