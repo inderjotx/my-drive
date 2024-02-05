@@ -16,6 +16,7 @@ export const IconPopOver = ({ fileName, children }: { fileName: string, children
 
     const [isDeleting, setDeleting] = useState<boolean>(false)
     const loading = useLoading((state) => state.loading)
+    const beingCreated = useLoading((state) => state.beingCreated)
 
     async function handleDelete() {
         setDeleting(true)
@@ -30,7 +31,7 @@ export const IconPopOver = ({ fileName, children }: { fileName: string, children
     // loading && "animate-pulse duration-1000 bg-emerald-200 rounded-2x
     return (
         <ContextMenu>
-            <ContextMenuTrigger><div className={cn(isDeleting && "animate-pulse duration-1000 bg-red-200 rounded-2xl")}>{children}</div></ContextMenuTrigger>
+            <ContextMenuTrigger><div className={cn("", isDeleting && "bg-foreground/5 animate-pulse duration-1000 rounded-2xl cursor-not-allowed", ((beingCreated === fileName) && loading) && "animate-pulse duration-1000 bg-foreground/5  rounded-2xl")}>{children}</div></ContextMenuTrigger>
             <ContextMenuContent >
                 <ContextMenuItem onSelect={handleOpen} >Open</ContextMenuItem>
                 <ContextMenuItem onSelect={handleDelete} >Delete</ContextMenuItem>

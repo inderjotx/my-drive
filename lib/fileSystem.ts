@@ -1,10 +1,11 @@
 import { useCreateDoc } from "@/hooks/CreateForm"
 import { useFileSystem } from "@/hooks/FileSystemState"
 import { useData } from "@/hooks/FileData"
-import { useLoading } from "@/hooks/loadinghoo"
+// import { useLoading } from "@/hooks/loadinghoo"
 import axios from 'axios'
 import { useSession } from "@/hooks/authentication"
 import { object } from "zod"
+import { useLoading } from "@/hooks/loadinghoo"
 
 
 
@@ -192,13 +193,17 @@ export async function createDoc() {
 
     const { attachment, type, docName } = useCreateDoc.getState()
     // const updateFileData = useData.getState().addFile
-    const setLoading = useLoading.getState().setLoading
     const setOpen = useCreateDoc.getState().setIsOpen
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const setBeingCreate = useLoading.getState().setBeingCreated
 
     const key = getKey(docName)
+    setBeingCreate(key)
 
 
 
+    setOpen(false)
+    updateStateData(docName, type)
 
     // if file upload to s3 after getting the presigned url
     if (type == "file") {
@@ -210,15 +215,11 @@ export async function createDoc() {
     }
 
     // update filesystem object and fileArray 
-    // updateFileData({ name: docName, type: type })
 
-    updateStateData(docName, type)
 
     // send data to backend 
     const response = await sendFileToDatabase()
 
-    setLoading(false)
-    setOpen(false)
 
 
 }

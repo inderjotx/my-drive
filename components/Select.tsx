@@ -22,7 +22,7 @@ export function SelectType() {
             <SelectContent>
                 <SelectGroup >
                     <SelectLabel>Type</SelectLabel>
-                    <SelectItem value="file">File</SelectItem>
+                    <SelectItem defaultValue={'file'} value="file">File</SelectItem>
                     <SelectItem value="folder">Folder</SelectItem>
                 </SelectGroup>
             </SelectContent>

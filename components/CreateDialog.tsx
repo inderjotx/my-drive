@@ -22,9 +22,13 @@ export function CreateDoc() {
     const { isOpen, setIsOpen, docName, setDocName, setAttachement, type } = useCreateDoc(state => state)
 
     const loading = useLoading((state) => state.loading)
+    const setLoading = useLoading((state) => state.setLoading)
 
     async function createFile() {
+
+        setLoading(true)
         await createDoc()
+        setLoading(false)
     }
 
 
@@ -38,6 +42,19 @@ export function CreateDoc() {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                            File
+                        </Label>
+                        <Input
+                            id="name"
+                            type="file"
+                            disabled={type == "folder"}
+                            // @ts-ignore
+                            onChange={(e) => { setAttachement(e.target.files?.[0]); setDocName(e.target.files?.[0].name) }}
+                            className="col-span-3"
+                        />
+                    </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="name" className="text-right">
                             Name
@@ -55,23 +72,10 @@ export function CreateDoc() {
                         </Label>
                         <SelectType />
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                            File
-                        </Label>
-                        <Input
-                            id="name"
-                            type="file"
-                            disabled={type == "folder"}
-                            // @ts-ignore
-                            onChange={(e) => setAttachement(e.target.files?.[0])}
-                            className="col-span-3"
-                        />
-                    </div>
                 </div>
                 <DialogFooter>
                     <Button type="button" onClick={createFile} >
-                        {loading ? <LoadingCircle /> : "Create"}
+                        Create
                     </Button>
                 </DialogFooter>
             </DialogContent>
