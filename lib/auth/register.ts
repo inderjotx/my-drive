@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import { User, PrismaClient } from '@prisma/client'
 import { UserType } from '@/app/api/register/route'
+import { getCurDate } from "./date"
 
 const SALT_ROUNDS = 10
 
@@ -19,7 +20,16 @@ export async function registerUser(name: string, email: string
                 email: email,
                 password: hashedPassword,
                 dataArray: ['/home'],
-                dataObject: JSON.stringify({ home: {} })
+                dataObject: JSON.stringify({
+                    home: {
+                        children: {},
+                        metadata: {
+                            type: 'folder',
+                            time: getCurDate(),
+                            size: "Don't know"
+                        }
+                    }
+                })
             }
         })
 
