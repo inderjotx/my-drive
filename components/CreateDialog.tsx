@@ -15,10 +15,17 @@ import { useCreateDoc } from "@/hooks/CreateForm"
 import { SelectType } from "./Select"
 import { createDoc } from "@/lib/fileSystem"
 import { useLoading } from "@/hooks/loadinghoo"
+import { useState } from "react"
+import { CakeIcon } from "lucide-react"
+import { CheckBox } from "./Checkbox"
+import Dropzone from "react-dropzone"
+import { cn } from "@/lib/utils"
+import { MyDropZone } from "./DropZone"
 
 export function CreateDoc() {
 
     const { isOpen, setIsOpen, docName, setDocName, setAttachement, type, setType } = useCreateDoc(state => state)
+    const [multiUpload, setMultiUpload] = useState<boolean>(false)
 
     const setLoading = useLoading((state) => state.setLoading)
 
@@ -35,11 +42,17 @@ export function CreateDoc() {
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Create </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription >
                         Create File or Folder
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="text-right">
+                    <CheckBox checked={multiUpload} setIsMultiUpload={setMultiUpload} />
+                </div>
+                <div className={cn("h-[225px] w-full ", !multiUpload && "hidden")}>
+                    <MyDropZone onUpload={() => { }} />
+                </div>
+                <div className={cn("grid gap-4 py-4", multiUpload && "hidden")}>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="name" className="text-right">
                             File
