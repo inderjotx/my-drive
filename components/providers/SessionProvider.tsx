@@ -3,26 +3,23 @@ import { SetSession } from '@/components/addSession'
 import { verifyToken } from '@/lib/auth/createToken'
 import { redirect } from "next/navigation"
 import { cookies } from 'next/headers'
-import axios from 'axios'
-import { User } from '@prisma/client'
+import { prisma } from '@/lib/auth/login'
 
 
-const getUserData = async function (jwt: string) {
+const getUserData = async function (userId: string) {
 
-    try {
+    const userData = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
 
-        const { data } = await axios.get('http://localhost:3000/api/user-info', {
-            headers: {
-                cookie: `jwt=${jwt}`
-            }
-        })
-        return data as User | { "message": string }
+    if (userData) {
+        userData.password = ""
     }
-    catch (error) {
-        console.log('[ERROR_GETTING_USER_DATA]')
-        console.log(error)
-        return { message: "something is wrong" }
-    }
+
+    return userData
+
 }
 
 
@@ -45,10 +42,13 @@ export async function SessionProvider({ children }: { children: React.ReactNode 
             redirect('/login')
         }
 
-        const userData = await getUserData(jwt.value)
-
-        if ("message" in userData) {
-            redirect('/login')
+        const userData = await getUserData(data.userId)
+        if (!userData) {
+            return (
+                <>
+                    {children}
+                </>
+            )
         }
 
 

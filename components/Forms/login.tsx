@@ -62,18 +62,13 @@ export function LoginForm() {
                 }
             })
 
-            console.log("[DATA_RETURDED_LOGIN]")
-            console.log(typeof data)
             const jsonData = JSON.parse(data)
             const user = jsonData.user
 
             console.log(user.dataObject)
 
-
             setSession(user.name, user.email, user.id)
             loadArray(user.dataArray)
-            console.log("user data from the database ")
-            console.log(JSON.parse(user.dataObject))
             loadData(JSON.parse(user.dataObject))
 
             router.push('/')

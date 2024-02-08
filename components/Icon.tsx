@@ -14,23 +14,28 @@ interface IconProps {
 }
 
 
+
+export const getUrl = async (key: string) => {
+
+    const { data: { url } } = await axios.post('/api/get-url', {
+        key: key,
+        method: "get"
+    })
+
+    return url
+}
+
+
+
+
 export const Icon = ({ icon }: IconProps) => {
     const update = useFileSystem((state) => state.updateActiveDir)
 
     const route = useRouter()
     const loading = useLoading((state) => state.loading)
     const beingCreated = useLoading((state) => state.beingCreated)
-    const { show, setShow, url, setUrl, setType } = useShowVideo(state => state)
+    const { show, setShow, setUrl, setType } = useShowVideo(state => state)
 
-    const getUrl = async (key: string) => {
-
-        const { data: { url } } = await axios.post('/api/get-url', {
-            key: key,
-            method: "get"
-        })
-
-        return url
-    }
 
     const downloadFile = async (key: string) => {
 
@@ -72,7 +77,7 @@ export const Icon = ({ icon }: IconProps) => {
                 </div>
             }
             {
-                icon.type.includes("file") &&
+                (icon.type.includes("file") || icon.type.includes("image")) &&
                 <div onClick={() => handleMedia(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 cursor-pointer  justify-center items-center")} >
                     <File className="h-20 w-20 " />
                     <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>

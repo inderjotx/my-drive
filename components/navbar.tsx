@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { ThemeSwitch } from './ui/ThemeSwitch'
 import { SearchBar } from './SearchBar'
+import { cn } from '@/lib/utils'
 
 export function Navbar() {
 
@@ -27,7 +28,7 @@ export function Navbar() {
             <div className='flex gap-28 items-center'>
 
                 <Link href="/">Free Drive</Link>
-                <SearchBar />
+                <SearchBar className={cn(userId ? "" : "hidden")} />
             </div>
             <div className='flex justify-center items-center gap-6 '>
                 {

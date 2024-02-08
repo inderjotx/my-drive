@@ -26,10 +26,10 @@ export function VideoProvider() {
                 </DialogContent>
             }
             {
-                type.includes("file") &&
-                <DialogContent className="max-w-[800px] max-h-[800px] h-[400px] w-[600px] p-4">
-                    <div className=' flex items-center justify-center '>
-                        <Image src={url} fill alt='image' sizes='' quality={100} objectFit='cover' className='' />
+                (type.includes("file") || type.includes("image")) &&
+                <DialogContent className="max-w-[800px] max-h-[800px] h-[400px] w-[600px] p-4 ">
+                    <div className=' flex items-center justify-center overflow-hidden'>
+                        <Image src={url} fill alt='image' sizes='' quality={100} objectFit='cover' className='absolute' />
                     </div>
                 </DialogContent>
             }

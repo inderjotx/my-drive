@@ -26,7 +26,7 @@ type SearchResultProps = { "value": string, label: string }[]
 
 
 
-export function SearchBar() {
+export function SearchBar({ className }: { className: string }) {
 
     const [searchData, setStateData] = useState<string>("")
     const dataArray = useData((state) => state.fileArray)
@@ -50,8 +50,8 @@ export function SearchBar() {
 
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+        <Popover open={open} onOpenChange={setOpen}  >
+            <PopoverTrigger asChild className={className}>
                 <Button
                     variant="outline"
                     role="combobox"
