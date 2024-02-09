@@ -3,7 +3,7 @@ import { IconType } from "@/lib/fileSystem"
 import { getPresignedUrl } from "@/lib/storeToS3"
 import { useFileSystem } from "@/hooks/FileSystemState"
 import axios from "axios"
-import { Folder, File, FileVideo, } from "lucide-react"
+import { Folder, File, FileVideo, FileText, } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useLoading } from "@/hooks/loadinghoo"
 import { cn } from "@/lib/utils"
@@ -39,7 +39,7 @@ export const Icon = ({ icon }: IconProps) => {
 
     const downloadFile = async (key: string) => {
 
-        if (loading && beingCreated === icon.key) return null
+        if (loading && beingCreated.includes(icon.key)) return null
 
 
         const url = await getUrl(key)
@@ -92,6 +92,13 @@ export const Icon = ({ icon }: IconProps) => {
                 </div>
             }
 
+            {
+                icon.type.includes("pdf") &&
+                <div onClick={() => downloadFile(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 cursor-pointer  justify-center items-center")} >
+                    <FileText className="h-20 w-20 " />
+                    <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>
+                </div>
+            }
         </div>
     )
 

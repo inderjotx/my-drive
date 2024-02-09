@@ -20,10 +20,16 @@ export async function POST(req: Request) {
     try {
 
 
+
         const user: UserType = data.user
         console.log("User inside the backend")
         console.log(user)
         const response = await loginUser(user.email, user.password)
+
+        if (!response || !response.user) {
+            return Response.json({ message: "Error" }, { status: 400 })
+        }
+
         const token = await getToken(response?.user?.name, response?.user.email, response?.user.id)
         console.log(token)
         // console.log(response)

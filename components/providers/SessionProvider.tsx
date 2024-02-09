@@ -55,7 +55,7 @@ export async function SessionProvider({ children }: { children: React.ReactNode 
         return (
 
             <>
-                <SetSession email={userData.email} userId={userData.id} name={userData.name} fileArray={userData.dataArray}
+                <SetSession email={userData.email} userId={userData.id} spaceLeft={userData.left} name={userData.name} fileArray={userData.dataArray}
                     FileData={JSON.parse(userData.dataObject as string)} />
                 {children}
             </>

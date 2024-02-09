@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCreateDoc } from "@/hooks/CreateForm"
 import { SelectType } from "./Select"
-import { createDoc } from "@/lib/fileSystem"
+import { bulkUpload, createDoc } from "@/lib/fileSystem"
 import { useLoading } from "@/hooks/loadinghoo"
 import { useState } from "react"
 import { CakeIcon } from "lucide-react"
@@ -50,7 +50,7 @@ export function CreateDoc() {
                     <CheckBox checked={multiUpload} setIsMultiUpload={setMultiUpload} />
                 </div>
                 <div className={cn("h-[225px] w-full ", !multiUpload && "hidden")}>
-                    <MyDropZone onUpload={() => { }} />
+                    <MyDropZone onUpload={bulkUpload} />
                 </div>
                 <div className={cn("grid gap-4 py-4", multiUpload && "hidden")}>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -84,7 +84,7 @@ export function CreateDoc() {
                         <SelectType />
                     </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className={cn(multiUpload && "hidden")}>
                     <Button type="button" onClick={createFile} >
                         Create
                     </Button>

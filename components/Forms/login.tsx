@@ -67,7 +67,7 @@ export function LoginForm() {
 
             console.log(user.dataObject)
 
-            setSession(user.name, user.email, user.id)
+            setSession(user.name, user.email, user.id, user.left)
             loadArray(user.dataArray)
             loadData(JSON.parse(user.dataObject))
 

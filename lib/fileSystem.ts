@@ -155,9 +155,6 @@ function updateStateData(name: string, type: string) {
 }
 
 
-
-
-
 export async function deleteDoc(key: string) {
 
     const { fileArray, FileData, loadArray, loadFileData } = useData.getState()
@@ -172,11 +169,15 @@ export async function deleteDoc(key: string) {
     console.log(newArray)
 
     // update database 
-    const respone = await sendFileToDatabase(newArray, newData)
+    const respone = sendFileToDatabase(newArray, newData)
 
 
     // update bucket 
-    const deletS3 = await deleteFromBucket(key)
+    const deletS3 = deleteFromBucket(key)
+
+
+    const resolvePromise = await Promise.all([respone, deletS3])
+
 
 
     loadFileData(newData)
@@ -204,9 +205,125 @@ async function deleteFromBucket(key: string) {
         console.log('[error deleteing in S3]', error)
     }
 
+}
+
+
+
+function updateState(dataArray: string[], fileData: FileSystem, fileName: string, fileType: string, currentDir: string) {
+
+
+    const pathArray = currentDir.split('/').slice(1);
+
+
+
+    let current = fileData;
+
+
+    for (let i = 0; i < pathArray.length; i++) {
+        const folder = pathArray[i];
+        current = current.children[folder];
+    }
+
+
+    current.children[fileName] = {
+        "children": {},
+        "metadata": {
+            "type": fileType,
+            "time": getCurDate(),
+            "size": "can get size"
+        }
+    };
+
+
+    const newKey = currentDir + '/' + fileName
+
+    dataArray = [...dataArray, newKey]
+
+    return {
+        array: dataArray,
+        object: JSON.parse(JSON.stringify(fileData)),
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+export async function bulkUpload(files: File[]) {
+
+
+
+    const setLoading = useLoading.getState().setLoading
+    const setBeingCreated = useLoading.getState().setBeingCreated
+    const setOpen = useCreateDoc.getState().setIsOpen
+    const { fileArray, FileData, loadArray, loadFileData } = useData.getState()
+    const currentDir = useFileSystem.getState().activeDirPath
+
+
+
+
+    setLoading(true)
+    setOpen(false)
+    // generating promise of urls 
+    const promiseUrls = files.map((file: File) => getPresignedUrl(currentDir + '/' + file.name, "put"))
+
+
+    const urls = await Promise.all(promiseUrls)
+
+
+    console.log(urls)
+
+
+    // put promises simulatneously
+    const putPromise = files.map((file: File, index: number) => storeInS3(urls[index], file))
+
+
+
+    // update dataArray and dataObject  
+    let state = {
+        object: FileData,
+        array: fileArray as string[]
+    }
+
+    const fileNames: string[] = []
+
+    files.forEach((file: File) => {
+        fileNames.push(file.name)
+        state = updateState(state.array, state.object, file.name, file.type, currentDir)
+    })
+
+
+
+
+    setBeingCreated(fileNames)
+
+    console.log(state.array)
+    console.log(state.object)
+
+    loadArray(state.array)
+    loadFileData(state.object)
+
+
+
+    const sendToDb = sendFileToDatabase(state.array, state.object)
+
+    const resolvingAllPromises = await Promise.all([...putPromise, sendToDb])
+
+    setLoading(false)
+    setBeingCreated([])
+
+
+}
+
+
+
 
 
 
@@ -222,7 +339,7 @@ export async function createDoc() {
     const setBeingCreate = useLoading.getState().setBeingCreated
 
     const key = getKey(docName)
-    setBeingCreate(key)
+    setBeingCreate([key])
 
 
 
@@ -234,16 +351,20 @@ export async function createDoc() {
 
         const url = await getPresignedUrl(key, 'put')
 
-        const hasStored = await storeInS3(url, attachment)
+        const hasStored = storeInS3(url, attachment)
+
+        const response = sendFileToDatabase()
+
+        await Promise.all([hasStored, response])
 
     }
 
-    // update filesystem object and fileArray 
+    else {
 
+        const response = await sendFileToDatabase()
+    }
 
-    // send data to backend 
-    const response = await sendFileToDatabase()
-
+    setBeingCreate([])
 
 
 }

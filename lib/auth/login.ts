@@ -25,6 +25,7 @@ export async function loginUser(email: string
         if (isCorrect) {
             console.log("[LOGIN_USER]", isUser)
             isUser.password = ""
+            await prisma.$disconnect()
             return { code: 0, message: "User loging Successfully", user: isUser }
         }
 
@@ -36,6 +37,5 @@ export async function loginUser(email: string
     }
 
     finally {
-        await prisma.$disconnect()
     }
 }

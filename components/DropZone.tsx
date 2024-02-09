@@ -7,10 +7,14 @@ import { Button } from './ui/button';
 
 
 interface MyDropzoneProps {
-    onUpload: (files: File[]) => Promise<number>
+    onUpload: (files: File[]) => Promise<void>
 
 }
 
+
+
+// for each file presigned urls ,
+// then for each file upload them along with update filearray  and filedata
 export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
 
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -37,14 +41,7 @@ export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: true });
 
     const handleUpload = async () => {
-        const response = await onUpload(uploadedFiles);
-
-        if (response == 0) {
-            setUploadedFiles([])
-        }
-        else {
-            console.log("error")
-        }
+        await onUpload(uploadedFiles);
     };
 
     return (
@@ -72,6 +69,9 @@ export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
                     ))}
                 </div>
             </ScrollArea>
+            <div className='ml-auto' >
+                <Button type='button' onClick={handleUpload} >Upload</Button>
+            </div>
         </div>
     );
 };

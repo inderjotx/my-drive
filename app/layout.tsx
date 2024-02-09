@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <html lang="en" suppressHydrationWarning>
         <head />
         <body>
+          <Toaster />
           <Navbar />
           <SessionProvider >
             <ThemeProvider
