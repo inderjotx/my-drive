@@ -8,7 +8,8 @@ export async function POST(req: Request) {
         return Response.json({ message: "Invalid request no image key was sent" }, { status: 400 })
     }
 
-    const url = await getPresignedUrl(data.key, data.method)
+
+    const url = await getPresignedUrl(data.key, data.method, data.duration)
 
     return Response.json({ url: url }, { status: 200 })
 

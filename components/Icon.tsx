@@ -15,10 +15,11 @@ interface IconProps {
 
 
 
-export const getUrl = async (key: string) => {
+export const getUrl = async (key: string, duration = 3600) => {
 
     const { data: { url } } = await axios.post('/api/get-url', {
         key: key,
+        duration: duration,
         method: "get"
     })
 

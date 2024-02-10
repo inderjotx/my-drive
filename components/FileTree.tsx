@@ -2,6 +2,8 @@
 import React from 'react'
 import { SpaceLeft } from './Loading'
 import { useSession } from '@/hooks/authentication'
+import { useData } from '@/hooks/FileData'
+import { RecursiveFiles } from './RecursiveFiles'
 const MainFolders = [
     'Home',
     'Images',
@@ -12,18 +14,15 @@ const MainFolders = [
 function FileTree() {
 
     const left = useSession((state) => state.spaceLeft)
+    const data = useData((state) => state.FileData)
 
     return (
         <div className='w-full h-full  '>
-            <div className='flex flex-col mx-2 '>
+            <div className='flex flex-col mx-2 gap-2 '>
                 <SpaceLeft left={left} />
-                {
-                    MainFolders.map((name: string, index: number) => (
-                        <div key={index} className='w-full h-10 flex items-center  text-left rounded-md  hover:bg-foreground/5 cursor-pointer '>
-                            <div className='p-2'>{name}</div>
-                        </div>
-                    ))
-                }
+                <div className=''>
+                    <RecursiveFiles data={data} />
+                </div>
             </div>
         </div>
     )

@@ -40,10 +40,10 @@ export const IconPopOver = ({ fileName, children }: { fileName: string, children
 
     const copyUrl = async (duration: number) => {
 
-        const url: string = await getPresignedUrl(fileName, 'get', duration)
-        console.log("called")
+        const url = await getUrl(fileName)
+        console.log(fileName)
         navigator.clipboard.writeText(url)
-        toast.success("URL Copied")
+        toast.success("URL Copied to Clipboard")
 
     }
 
@@ -67,7 +67,7 @@ export const IconPopOver = ({ fileName, children }: { fileName: string, children
                 <ContextMenuSub>
                     <ContextMenuSubTrigger >Share Url</ContextMenuSubTrigger>
                     <ContextMenuSubContent className="w-20">
-                        <ContextMenuItem onClick={() => copyUrl(60 * 60)} ><span onClick={() => { copyUrl(60 * 60) }} >One Day </span> </ContextMenuItem>
+                        <ContextMenuItem ><span onClick={() => { copyUrl(60 * 60) }} >One Day </span> </ContextMenuItem>
                         <ContextMenuItem onSelect={() => copyUrl(60 * 60 * 24)}>One Day</ContextMenuItem>
                         <ContextMenuItem onSelect={() => copyUrl(60 * 60 * 24 * 7)} >One Week</ContextMenuItem>
                     </ContextMenuSubContent>

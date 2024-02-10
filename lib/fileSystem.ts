@@ -19,6 +19,7 @@ interface Metadata {
     "type": string,
     "size": string,
     "time": string
+    "key": string
 }
 
 
@@ -164,16 +165,18 @@ function updateStateData(name: string, type: string, fileSize: number) {
     console.log("current")
     console.log(current)
 
+    const newKey = getKey(name)
     current.children[name] = {
         "children": {},
         "metadata": {
             "type": type,
             "time": getCurDate(),
-            "size": `${fileSize}`
+            "size": `${fileSize}`,
+            "key": newKey
+
         }
     };
     console.log(FileData)
-    const newKey = getKey(name)
 
     loadFileData(JSON.parse(JSON.stringify(FileData)))
     loadArray([...fileArray, newKey])
@@ -259,7 +262,8 @@ function updateState(dataArray: string[], fileData: FileSystem, fileName: string
         "metadata": {
             "type": fileType,
             "time": getCurDate(),
-            "size": `${fileSize}`
+            "size": `${fileSize}`,
+            "key": currentDir + '/' + fileName
         }
     };
 
