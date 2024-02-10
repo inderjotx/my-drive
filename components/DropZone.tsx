@@ -4,6 +4,8 @@ import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { Trash, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { useSession } from '@/hooks/authentication';
+import toast from 'react-hot-toast';
 
 
 interface MyDropzoneProps {
@@ -18,6 +20,8 @@ interface MyDropzoneProps {
 export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
 
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+    const left = useSession((state) => state.spaceLeft)
+    const setLeft = useSession((state) => state.setSpaceLeft)
 
 
     const removeFile = (index: number) => {
@@ -41,7 +45,19 @@ export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: true });
 
     const handleUpload = async () => {
-        await onUpload(uploadedFiles);
+
+        const totalSize = uploadedFiles.reduce((totalSize, file) => totalSize + file.size, 0)
+
+        const leftAfterUpload = left - totalSize
+
+        if (leftAfterUpload >= 0) {
+            setLeft(leftAfterUpload)
+            await onUpload(uploadedFiles);
+        }
+        else {
+            toast.error("No Space Left , Update Plan")
+        }
+
     };
 
     return (
@@ -56,7 +72,7 @@ export const MyDropZone: React.FC<MyDropzoneProps> = ({ onUpload }) => {
                     <h4 className="mb-4 text-sm font-medium leading-none">Selected Files</h4>
                     {uploadedFiles.map((file: File, index: number) => (
                         <>
-                            <div key={file.name} className=" flex items-center text-sm">
+                            <div key={index} className=" flex items-center text-sm">
                                 <div>
                                     {file.name}
                                 </div>

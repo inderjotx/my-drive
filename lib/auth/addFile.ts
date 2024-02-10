@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 
-export async function addFileToDatabase(dataArray: string[], userId: string, dataObject: FileSystem) {
+export async function addFileToDatabase(left: number, dataArray: string[], userId: string, dataObject: FileSystem) {
 
     try {
 
@@ -12,6 +12,7 @@ export async function addFileToDatabase(dataArray: string[], userId: string, dat
                 id: userId
             },
             data: {
+                left: left,
                 dataArray: dataArray,
                 dataObject: JSON.stringify(dataObject)
             }

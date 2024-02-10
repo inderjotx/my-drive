@@ -60,7 +60,7 @@ export const IconPopOver = ({ fileName, children }: { fileName: string, children
     // loading && "animate-pulse duration-1000 bg-emerald-200 rounded-2x
     return (
         <ContextMenu>
-            <ContextMenuTrigger><div className={cn("", isDeleting && "bg-foreground/5 animate-pulse duration-1000 rounded-2xl cursor-not-allowed", ((beingCreated.includes(fileName)) && loading) && "animate-pulse duration-1000 bg-foreground/5  rounded-2xl")}>{children}</div></ContextMenuTrigger>
+            <ContextMenuTrigger><div className={cn("", isDeleting && "bg-foreground/5 animate-pulse duration-1000 rounded-2xl cursor-not-allowed",)}>{children}</div></ContextMenuTrigger>
             <ContextMenuContent >
                 <ContextMenuItem onSelect={handleMedia} >Open</ContextMenuItem>
                 <ContextMenuItem onSelect={handleDelete} >Delete</ContextMenuItem>

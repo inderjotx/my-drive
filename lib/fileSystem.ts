@@ -30,6 +30,33 @@ export interface IconType {
 
 
 
+function computerSize(data: FileSystem,): number {
+
+    let sizeOfDir = 0;
+
+    if (data.metadata.type !== "folder") {
+        return parseInt(data.metadata.size, 10)
+    }
+
+
+    // go to children 
+    const childrens = data.children
+
+    // get their key 
+    const keys = Object.keys(childrens)
+
+
+    // for each key 
+
+    keys.forEach((key) => {
+
+        sizeOfDir += computerSize(childrens[key])
+
+    })
+
+    return sizeOfDir
+
+}
 
 export function getChildren(path: string, data: FileSystem): IconType[] {
 
@@ -114,7 +141,7 @@ async function storeInS3(url: string, file: File | null) {
 }
 
 
-function updateStateData(name: string, type: string) {
+function updateStateData(name: string, type: string, fileSize: number) {
 
     const currentDir = useFileSystem.getState().activeDirPath
     const { loadArray, loadFileData, FileData, fileArray } = useData.getState()
@@ -142,7 +169,7 @@ function updateStateData(name: string, type: string) {
         "metadata": {
             "type": type,
             "time": getCurDate(),
-            "size": "can get size"
+            "size": `${fileSize}`
         }
     };
     console.log(FileData)
@@ -167,6 +194,8 @@ export async function deleteDoc(key: string) {
 
     console.log('Updated Array')
     console.log(newArray)
+
+
 
     // update database 
     const respone = sendFileToDatabase(newArray, newData)
@@ -209,7 +238,7 @@ async function deleteFromBucket(key: string) {
 
 
 
-function updateState(dataArray: string[], fileData: FileSystem, fileName: string, fileType: string, currentDir: string) {
+function updateState(dataArray: string[], fileData: FileSystem, fileName: string, fileType: string, currentDir: string, fileSize: number) {
 
 
     const pathArray = currentDir.split('/').slice(1);
@@ -230,7 +259,7 @@ function updateState(dataArray: string[], fileData: FileSystem, fileName: string
         "metadata": {
             "type": fileType,
             "time": getCurDate(),
-            "size": "can get size"
+            "size": `${fileSize}`
         }
     };
 
@@ -256,6 +285,8 @@ function updateState(dataArray: string[], fileData: FileSystem, fileName: string
 
 
 
+
+
 export async function bulkUpload(files: File[]) {
 
 
@@ -265,7 +296,6 @@ export async function bulkUpload(files: File[]) {
     const setOpen = useCreateDoc.getState().setIsOpen
     const { fileArray, FileData, loadArray, loadFileData } = useData.getState()
     const currentDir = useFileSystem.getState().activeDirPath
-
 
 
 
@@ -295,8 +325,8 @@ export async function bulkUpload(files: File[]) {
     const fileNames: string[] = []
 
     files.forEach((file: File) => {
-        fileNames.push(file.name)
-        state = updateState(state.array, state.object, file.name, file.type, currentDir)
+        fileNames.push(currentDir + '/' + file.name)
+        state = updateState(state.array, state.object, file.name, file.type, currentDir, file.size)
     })
 
 
@@ -334,17 +364,26 @@ export async function createDoc() {
 
     const { attachment, type, docName } = useCreateDoc.getState()
     // const updateFileData = useData.getState().addFile
+
     const setOpen = useCreateDoc.getState().setIsOpen
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const setBeingCreate = useLoading.getState().setBeingCreated
+
+
 
     const key = getKey(docName)
     setBeingCreate([key])
 
 
 
+
+
     setOpen(false)
-    updateStateData(docName, type)
+
+
+
+    updateStateData(docName, type, attachment?.size as number)
 
     // if file upload to s3 after getting the presigned url
     if (type != "folder") {
@@ -372,9 +411,13 @@ export async function createDoc() {
 
 
 
+
 export function deleteFileData(path: string, root: FileSystem) {
     const pathArray = path.split('/');
     let current = root;
+
+    const spaceLeft = useSession.getState().spaceLeft
+    const setSpaceLeft = useSession.getState().setSpaceLeft
 
     // Traverse the path to the parent directory
     for (let i = 1; i < pathArray.length - 1; i++) {
@@ -383,6 +426,15 @@ export function deleteFileData(path: string, root: FileSystem) {
     }
 
     const name = pathArray[pathArray.length - 1]
+
+
+    const size = computerSize(current.children[name])
+    console.log(name)
+    console.log(current.children[name])
+    console.log(size)
+    setSpaceLeft(spaceLeft + size)
+
+
     delete current.children[name]
 
     return JSON.parse(JSON.stringify(root));
@@ -403,6 +455,7 @@ export async function sendFileToDatabase(dataArray?: string[], dataObject?: File
 
     let data = dataObject
     let array = dataArray
+    const left = useSession.getState().spaceLeft
 
     if (!data || !array) {
 
@@ -417,7 +470,8 @@ export async function sendFileToDatabase(dataArray?: string[], dataObject?: File
     try {
         const reponse = await axios.post('/api/add-file', {
             dataArray: array,
-            dataObject: data
+            dataObject: data,
+            left: left
         })
 
         return true

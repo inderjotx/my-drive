@@ -39,7 +39,7 @@ export const Icon = ({ icon }: IconProps) => {
 
     const downloadFile = async (key: string) => {
 
-        if (loading && beingCreated.includes(icon.key)) return null
+        if (loading && beingCreated.includes(icon.key)) return;
 
 
         const url = await getUrl(key)
@@ -57,6 +57,7 @@ export const Icon = ({ icon }: IconProps) => {
 
     const handleMedia = async (key: string) => {
 
+        if (loading && beingCreated.includes(icon.key)) return;
         const url = await getUrl(key)
         setShow(true)
         setType(icon.type)
@@ -64,12 +65,15 @@ export const Icon = ({ icon }: IconProps) => {
         console.log(url)
     }
 
+    console.log(beingCreated)
+    console.log(icon.key)
+    console.log(beingCreated.includes(icon.key))
 
     return (
-        <div className="h-40   ">
+        <div className={cn("h-40 cursor-pointer   ", loading && beingCreated.includes(icon.key) && "hover:cursor-not-allowed animate-pulse duration-1000 bg-foreground/5  rounded-2xl")}>
             {
                 icon.type == "folder" &&
-                <div className="flex  flex-col px-6 cursor-pointer rounded-2xl hover:bg-foreground/5 w-full h-full   justify-center items-center" onClick={() => update(icon.key)} >
+                <div className="flex  flex-col px-6 rounded-2xl hover:bg-foreground/5 w-full h-full   justify-center items-center" onClick={() => update(icon.key)} >
                     <Folder className="h-20 w-20" />
                     <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>
 
@@ -78,7 +82,7 @@ export const Icon = ({ icon }: IconProps) => {
             }
             {
                 (icon.type.includes("file") || icon.type.includes("image")) &&
-                <div onClick={() => handleMedia(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 cursor-pointer  justify-center items-center")} >
+                <div onClick={() => handleMedia(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 justify-center items-center")} >
                     <File className="h-20 w-20 " />
                     <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>
                 </div>
@@ -86,7 +90,7 @@ export const Icon = ({ icon }: IconProps) => {
 
             {
                 icon.type.includes("video") &&
-                <div onClick={() => handleMedia(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 cursor-pointer  justify-center items-center")} >
+                <div onClick={() => handleMedia(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 justify-center items-center")} >
                     <FileVideo className="h-20 w-20 " />
                     <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>
                 </div>
@@ -94,7 +98,7 @@ export const Icon = ({ icon }: IconProps) => {
 
             {
                 icon.type.includes("pdf") &&
-                <div onClick={() => downloadFile(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 cursor-pointer  justify-center items-center")} >
+                <div onClick={() => downloadFile(icon.key)} className={cn("flex flex-col w-full h-full px-6 rounded-2xl hover:bg-foreground/5 justify-center items-center")} >
                     <FileText className="h-20 w-20 " />
                     <p>{`${icon.name.slice(0, 12)}${(icon.name.length > 12) ? "..." : ""}`}</p>
                 </div>

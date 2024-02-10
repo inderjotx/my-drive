@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     try {
 
 
-        const { dataArray, dataObject } = await req.json()
+        const { dataArray, dataObject, left } = await req.json()
 
         const encToken = req.cookies.get('jwt')
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
             redirect('/login')
         }
 
-        if (!dataArray || !dataObject) {
+        if (!dataArray || !dataObject || !left) {
             return NextResponse.json({ message: "Invalid request" }, { status: 400 })
         }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         }
 
 
-        const updateUser = await addFileToDatabase(dataArray, data.userId, dataObject)
+        const updateUser = await addFileToDatabase(left, dataArray, data.userId, dataObject)
 
         return NextResponse.json(updateUser, { status: 200 })
 

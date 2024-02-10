@@ -16,24 +16,36 @@ import { SelectType } from "./Select"
 import { bulkUpload, createDoc } from "@/lib/fileSystem"
 import { useLoading } from "@/hooks/loadinghoo"
 import { useState } from "react"
-import { CakeIcon } from "lucide-react"
 import { CheckBox } from "./Checkbox"
-import Dropzone from "react-dropzone"
 import { cn } from "@/lib/utils"
 import { MyDropZone } from "./DropZone"
+import { useSession } from "@/hooks/authentication"
+import toast from "react-hot-toast"
 
 export function CreateDoc() {
 
-    const { isOpen, setIsOpen, docName, setDocName, setAttachement, type, setType } = useCreateDoc(state => state)
+    const { isOpen, setIsOpen, docName, setDocName, setAttachement, attachment, type, setType } = useCreateDoc(state => state)
     const [multiUpload, setMultiUpload] = useState<boolean>(false)
+    const left = useSession((state) => state.spaceLeft)
+    const setLeft = useSession((state) => state.setSpaceLeft)
 
     const setLoading = useLoading((state) => state.setLoading)
 
     async function createFile() {
 
-        setLoading(true)
-        await createDoc()
-        setLoading(false)
+        const leftAfterUpload = left - (attachment?.size || 0)
+
+
+        if (leftAfterUpload >= 0) {
+
+            setLeft(leftAfterUpload)
+            setLoading(true)
+            await createDoc()
+            setLoading(false)
+        }
+        else {
+            toast.error("No Space Left , upgrade plan")
+        }
     }
 
 
