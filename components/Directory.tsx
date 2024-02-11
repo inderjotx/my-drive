@@ -31,12 +31,12 @@ function Directory() {
 
 
     return (
-        <div className='w-full h-full grid grid-cols-8'>
-            <div className='col-span-2  lg:col-span-1 border-r mt-12'>
+        <div className='flex w-full h-full '>
+            <div className='hidden md:flex h-screen
+             md:flex-initial md:w-[200px] py-6 rounded-lg lg:w-[230px] border-r border-t mt-12 bg-gray-50 dark:bg-background/95'>
                 <FileTree />
             </div>
-            <div className='h-full w-full col-span-6  lg:col-span-7 px-6 pt-4 flex flex-col '>
-
+            <div className='h-full  px-6 pt-4 flex flex-col '>
                 <div className='w-full h-20 '>
                     <BreakCrums />
                 </div>

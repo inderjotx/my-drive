@@ -10,6 +10,18 @@ export function RecursiveFiles({ data }: { data: FileSystem }) {
 
     const keys = Object.keys(data.children)
     const [showName, setShowName] = useState<string[]>([])
+    const setCurDir = useFileSystem((state) => state.updateActiveDir)
+
+
+    const handleChangeDir = (name: string) => {
+
+        const array = data.children[name].metadata.key.split('/')
+        console.log(array)
+        const key = array.slice(0, array.length - 1).join('/')
+        console.log(key)
+        setCurDir(key)
+
+    }
 
     const toggleFile = (name: string) => {
 
@@ -36,7 +48,7 @@ export function RecursiveFiles({ data }: { data: FileSystem }) {
                                 ?
                                 <div className='flex flex-col  mt-2'>
                                     <div onClick={() => toggleFile(name)}
-                                        className='h-10 cursor-pointer w-full flex items-center bg-foreground/5 hover:bg-foreground/10 rounded-sm  ' >
+                                        className='h-10 cursor-pointer w-full flex items-center bg-foreground/5 hover:bg-foreground/10 rounded-sm animate-accordion-down ' >
                                         {
                                             showName.includes(name) ?
 
@@ -51,7 +63,7 @@ export function RecursiveFiles({ data }: { data: FileSystem }) {
                                     </div>
                                 </div>
                                 :
-                                <div className='flex gap-2 items-center  h-10 p-2 whitespace-nowrap rounded-sm bg-foreground/5 mt-2 hover:bg-foreground/10 '>
+                                <div onClick={() => handleChangeDir(name)} className='flex gap-2 items-center  h-10 p-2 whitespace-nowrap rounded-sm bg-foreground/5 mt-2 hover:bg-foreground/10 cursor-pointer '>
                                     <File className='w-4 h-4 flex-none' ></File>
                                     <span className='text-sm' >{name}</span>
                                 </div>

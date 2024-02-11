@@ -4,12 +4,6 @@ import { SpaceLeft } from './Loading'
 import { useSession } from '@/hooks/authentication'
 import { useData } from '@/hooks/FileData'
 import { RecursiveFiles } from './RecursiveFiles'
-const MainFolders = [
-    'Home',
-    'Images',
-    'Videos',
-
-]
 
 function FileTree() {
 
@@ -20,7 +14,7 @@ function FileTree() {
         <div className='w-full h-full  '>
             <div className='flex flex-col mx-2 gap-2 '>
                 <SpaceLeft left={left} />
-                <div className=''>
+                <div className='w-full'>
                     <RecursiveFiles data={data} />
                 </div>
             </div>

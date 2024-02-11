@@ -15,7 +15,7 @@ export function SelectType() {
     const setType = useCreateDoc((state) => state.setType)
 
     return (
-        <Select onValueChange={setType} >
+        <Select defaultValue="file" onValueChange={setType} >
             <SelectTrigger className="w-[278px]">
                 <SelectValue placeholder="Select type of document" />
             </SelectTrigger>

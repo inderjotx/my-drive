@@ -24,13 +24,13 @@ export function Navbar() {
     }
 
     return (
-        <div className='flex static top-0  h-16 items-center px-6 pt-3  justify-between'>
-            <div className='flex gap-28 items-center'>
+        <div className='flex static top-0  h-16 items-center px-6 pt-3'>
+            <div className='flex lg:gap-28 items-center'>
 
-                <Link href="/">Free Drive</Link>
-                <SearchBar className={cn(userId ? "" : "hidden")} />
+                <Link className='text-xl' href="/">Free Drive</Link>
             </div>
-            <div className='flex justify-center items-center gap-6 '>
+            <div className='flex ml-auto justify-center items-center gap-6 '>
+                <SearchBar className={cn("hidden  ", userId ? "md:flex" : "hidden")} />
                 {
                     userId == "" || !userId ? <>
                         <Button className='rounded-full px-6 '> <Link href="/register"  >Register</Link></Button>
